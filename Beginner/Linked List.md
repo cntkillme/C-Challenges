@@ -143,6 +143,7 @@ exit(1);
 
 ## Additional Challenge: Extra Functionality
 You may choose to implement as many of these as you'd like.
+ If the iterator challenge is planned/completed, these functions must not invalidate iterators.
 
 ```c
 typedef int (*comparator_t)(value_t, value_t);
@@ -157,7 +158,6 @@ void linked_list_reverse(linked_list* list);
 /**
  * Sorts a linked_list in the order defined by the given comparator function.
  * Expected runtime: O(n^2) or better
- * If the iterator challenge is planned/completed, sort must not invalidate iterators.
  */
 void linked_list_sort(linked_list* list, comparator_t comparator);
 
