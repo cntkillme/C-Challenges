@@ -141,55 +141,6 @@ exit(1);
 
 ---
 
-## Additional Challenge: Iterators
-An iterator is a *pointer-like* object that refers to a node in the linked_list.
-
-**Iterator invalidation** refers to when an iterator is no longer valid. For linked_list this occurs when:
-- The element associated with the given iterator has been deleted.
-
-```c
-typedef struct node* iter_t;
-
-/**
- * Returns an iterator to the start of the linked_list.
- * If the list is empty, the end iterator is returned.
- * Expected runtime: O(1)
- */
-iter_t linked_list_begin(const linked_list* list);
-
-/**
- * Returns an iterator to the end of the linked_list (one passed the last element).
- * Expected runtime: O(1)
- */
-iter_t linked_list_end(const linked_list* list);
-
-/**
- * Advances the iterator by `i`.
- * Expected runtime: O(|i|)
- * For out-of-bounds errors, see Handling Errors.
- */
-iter_t linked_list_advance(const linked_list* list, const iter_t iter, int i);
-
-/**
- * Inserts an element before the given iterator.
- * Returns the iterator of the newly inserted element.
- * Expected runtime: O(1)
- * For memory allocation errors, see Handling Errors.
- */
-iter_t linked_list_insert(linked_list* list, iter_t iter, value_t value);
-
-/**
- * Erases the element associated with the given iterator.
- * Returns the iterator of the previous element.
- * Expected runtime: O(1)
- * Invalidates iterators to this element.
- * For out-of-bounds errors, see Handling Errors.
- */
-iter_t linked_list_erase(linked_list* list, iter_t iter);
-```
-
----
-
 ## Additional Challenge: Extra Functionality
 You may choose to implement as many of these as you'd like. If you have decided to do the iterator additional challenge, 
 
@@ -206,6 +157,7 @@ void linked_list_reverse(linked_list* list);
 /**
  * Sorts a linked_list in the order defined by the given comparator function.
  * Expected runtime: O(n^2) or better
+ * If additional iterator challenge is planned/completed, sort must not invalidate iterators.
  */
 void linked_list_sort(linked_list* list, comparator_t comparator);
 
@@ -233,15 +185,69 @@ void linked_list_swap(linked_list* list1, linked_list* list2);
 
 ---
 
+## Additional Challenge: Iterators
+An iterator is a *pointer-like* object that refers to a node in the linked_list.
+
+**Iterator invalidation** refers to when an iterator is no longer valid. For linked_list this occurs when:
+- The element associated with the given iterator has been deleted.
+
+```c
+typedef struct node* iter_t;
+
+/**
+ * Returns an iterator to the start of the linked_list.
+ * If the list is empty, the end iterator is returned.
+ * Expected runtime: O(1)
+ */
+iter_t linked_list_begin(const linked_list* list);
+
+/**
+ * Returns an iterator to the end of the linked_list (one passed the last element).
+ * Expected runtime: O(1)
+ */
+iter_t linked_list_end(const linked_list* list);
+
+/**
+ * Advances the iterator by `i`.
+ * Expected runtime: O(|i|)
+ * For out-of-bounds errors, see Handling Errors.
+ */
+iter_t linked_list_advance(const linked_list* list, iter_t iter, int i);
+
+/**
+ * Inserts an element before the given iterator.
+ * Returns the iterator of the newly inserted element.
+ * Expected runtime: O(1)
+ * For memory allocation errors, see Handling Errors.
+ */
+iter_t linked_list_insert(linked_list* list, iter_t iter, value_t value);
+
+/**
+ * Erases the element associated with the given iterator.
+ * Returns the iterator following the erased element.
+ * Expected runtime: O(1)
+ * Invalidates iterators to this element.
+ * For out-of-bounds errors, see Handling Errors.
+ */
+iter_t linked_list_erase(linked_list* list, iter_t iter);
+```
+
+---
+
 ## Test Code
 ```c
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
+#include <time.h>
 #include "linked_list.h"
 
 // assuming value_t is double
 
 #define ASSERT(c, e) assert(c, e, __LINE__)
+
+void test_additional();
+void test_iterator();
 
 void assert(int cond, const char* err, int line)
 {
@@ -255,7 +261,7 @@ int main()
 {
 	linked_list* list1 = linked_list_new();
 	linked_list* list2;
-	
+
 	linked_list_resize(list1, 4, 1.0); // test grow
 	ASSERT(linked_list_size(list1) == 4, "resize or size failed");
 	ASSERT(linked_list_front(list1) == 1.0, "front failed");
@@ -299,7 +305,175 @@ int main()
 	ASSERT(linked_list_get(list1, 1) == -5.0, "set or get failed");
 	ASSERT(linked_list_get(list1, 2) == -10.0, "set or get failed");
 
+	linked_list_free(list1);
+
+	test_additional();
+	test_iterator();
+
 	printf("Tests completed!\n");
 	return 0;
+}
+
+void write_f(double b) {
+	printf("%02.0f ", b);
+}
+
+int comparator(double a, double b) {
+	return a <= b;
+}
+
+void test_additional()
+{
+	linked_list* list = linked_list_new();
+	linked_list* sorted;
+	linked_list* reversed;
+
+	srand((unsigned int)time(NULL));
+
+	for (int i = 0; i <= 5 + rand()%50; i++)
+		linked_list_push_back(list, rand() % 100);
+
+	sorted = linked_list_copy(list);
+	linked_list_sort(sorted, comparator);
+	reversed = linked_list_copy(sorted);
+	linked_list_reverse(reversed);
+
+	// test sort
+	{
+		int is_sorted = 1;
+
+		for (size_t i = 0; i < linked_list_size(sorted) - 1; i++) {
+			value_t a = linked_list_get(sorted, i);
+			value_t b = linked_list_get(sorted, i + 1);
+
+			if (!comparator(a, b)) {
+				is_sorted = 0;
+				break;
+			}
+		}
+
+		ASSERT(is_sorted, "sort failed");
+	}
+
+	// test reverse
+	{
+		int is_reversed = 1;
+
+		ASSERT(linked_list_size(sorted) == linked_list_size(reversed), "reverse failed");
+
+		for (size_t i = 0; i < linked_list_size(reversed); i--) {
+			value_t a = linked_list_get(reversed, i);
+			value_t b = linked_list_get(sorted, linked_list_size(reversed) - i - 1);
+
+			if (a != b) {
+				is_reversed = 0;
+				break;
+			}
+		}
+
+		ASSERT(is_reversed, "reverse failed");
+	}
+
+	// test append
+	{
+		linked_list* appended = linked_list_copy(sorted);
+		linked_list* reversedClone = linked_list_copy(reversed);
+		int is_appended = 1;
+
+		linked_list_append(appended, reversedClone);
+		
+		ASSERT(linked_list_size(reversedClone) == 0, "append failed");
+		ASSERT(linked_list_size(appended) == linked_list_size(sorted) + linked_list_size(reversed), "append failed");
+
+		for (size_t i = 0; i < linked_list_size(sorted); i++) {
+			value_t a = linked_list_get(appended, i);
+			value_t b = linked_list_get(sorted, i);
+
+			if (a != b) {
+				is_appended = 0;
+				break;
+			}
+		}
+
+		for (size_t i = 0; i < linked_list_size(reversed); i++) {
+			value_t a = linked_list_get(appended, linked_list_size(sorted) + i);
+			value_t b = linked_list_get(reversed, i);
+
+			if (a != b) {
+				is_appended = 0;
+				break;
+			}
+		}
+
+		ASSERT(is_appended, "append failed");
+
+		linked_list_free(appended);
+		linked_list_free(reversedClone);
+	}
+
+	linked_list_free(list);
+	linked_list_free(sorted);
+	linked_list_free(reversed);
+}
+
+void test_iterator()
+{
+	linked_list* list = linked_list_new();
+	double values[] = { 10, 15, 20, 25, 30 };
+	size_t len = sizeof(values)/sizeof(double);
+
+	for (size_t i = 0; i < len; i++)
+		linked_list_push_back(list, values[i]);
+
+	// test begin, end, advance
+	{
+		iter_t iter = linked_list_begin(list);
+		size_t idx = 0;
+		int correct = 1;
+
+		while (iter != linked_list_end(list)) {
+			if (iter->value != values[idx]) {
+				correct = 0;
+				break;
+			}
+			iter = linked_list_advance(list, iter, 1);
+			idx += 1;
+		}
+
+		ASSERT(correct, "begin/end/advance failed");
+		ASSERT(iter == linked_list_end(list), "begin/end/advance failed");
+		ASSERT(idx == len, "begin/end/advance failed");
+	}
+
+	// test insert
+	linked_list_insert(list, linked_list_begin(list), 5);
+	linked_list_insert(list, linked_list_end(list), 35);
+	linked_list_insert(list, linked_list_advance(list, linked_list_begin(list), 2), 12);
+	linked_list_insert(list, linked_list_advance(list, linked_list_end(list), -5), 13); // 5 10 12 13 15 20 25 30 35
+
+	ASSERT(linked_list_size(list) == 9, "insert failed");
+	ASSERT(linked_list_get(list, 1) == 10.0f, "insert failed");
+	ASSERT(linked_list_get(list, 2) == 12.0f, "insert failed");
+	ASSERT(linked_list_get(list, 4) == 15.0f, "insert failed");
+	ASSERT(linked_list_get(list, 6) == 25.0f, "insert failed");
+
+	// test erase
+	{
+		iter_t third = linked_list_advance(list, linked_list_begin(list), 2);
+
+		while (third != linked_list_end(list))
+			third = linked_list_erase(list, third); // 5 10
+
+		ASSERT(linked_list_size(list) == 2, "erase failed");
+
+		third = linked_list_advance(list, third, -1);
+		ASSERT(third->value == 10.0f, "erase/advance failed");
+		third = linked_list_advance(list, third, -1);
+		ASSERT(third->value == 5.0f, "erase/advance failed");
+
+		ASSERT(third == linked_list_begin(list), "erase/advance failed");
+	}
+
+	linked_list_free(list);
 }
 ```
