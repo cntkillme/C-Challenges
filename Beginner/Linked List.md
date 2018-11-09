@@ -208,11 +208,18 @@ iter_t linked_list_begin(const linked_list* list);
 iter_t linked_list_end(const linked_list* list);
 
 /**
- * Fetches the value of the associated iterator.
+ * Reads the value of the associated iterator.
  * Expected runtime: O(1)
  * For out-of-bounds errors, see Handling Errors.
  */
-value_t linked_list_fetch(const linked_list* list, iter_t);
+value_t linked_list_read(const linked_list* list, iter_t iter);
+
+/**
+ * Writes the value to the associated iterator.
+ * Expected runtime: O(1)
+ * For out-of-bounds errors, see Handling Errors.
+ */
+void linked_list_write(const linked_list* list, iter_t iter, value_t value);
 
 /**
  * Advances the iterator by `i`.
