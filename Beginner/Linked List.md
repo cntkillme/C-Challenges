@@ -208,6 +208,13 @@ iter_t linked_list_begin(const linked_list* list);
 iter_t linked_list_end(const linked_list* list);
 
 /**
+ * Fetches the value of the associated iterator.
+ * Expected runtime: O(1)
+ * For out-of-bounds errors, see Handling Errors.
+ */
+value_t linked_list_fetch(const linked_list* list, iter_t);
+
+/**
  * Advances the iterator by `i`.
  * Expected runtime: O(|i|)
  * For out-of-bounds errors, see Handling Errors.
@@ -432,7 +439,7 @@ void test_iterator()
 		int correct = 1;
 
 		while (iter != linked_list_end(list)) {
-			if (iter->value != values[idx]) {
+			if (linked_list_fetch(list, iter) != values[idx]) {
 				correct = 0;
 				break;
 			}
@@ -467,9 +474,9 @@ void test_iterator()
 		ASSERT(linked_list_size(list) == 2, "erase failed");
 
 		third = linked_list_advance(list, third, -1);
-		ASSERT(third->value == 10.0f, "erase/advance failed");
+		ASSERT(linked_list_fetch(list, third) == 10.0f, "erase/advance failed");
 		third = linked_list_advance(list, third, -1);
-		ASSERT(third->value == 5.0f, "erase/advance failed");
+		ASSERT(linked_list_fetch(list, third) == 5.0f, "erase/advance failed");
 
 		ASSERT(third == linked_list_begin(list), "erase/advance failed");
 	}
