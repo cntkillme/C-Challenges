@@ -182,6 +182,15 @@ iter_t linked_list_insert_many(linked_list* list, iter_t begin, size_t count,
   value_t value);
 
 /**
+ * Inserts nodes in [first, last) before dest. Beware of
+ *  overlapping between the nodes and the dest.
+ * Assume dist(first, last) is non-negative and first != end.
+ * Returns an iterator to the first inserted element.
+ */
+iter_t linked_list_insert_range(linked_list* list, iter_t dest,
+  const_iter_t first, const_iter_t last);
+
+/**
  * Erases all elements in the range [first, last)
  * Assume dist(first, last) is non-negative and first != end.
  * Returns the iterator following the last erased element.
@@ -192,7 +201,7 @@ iter_t linked_list_erase_range(linked_list* list, iter_t first, iter_t last);
  * Swaps the nodes associated with two iterators.
  * Assume iter1, iter2 are in the range [begin, end).
  */
-void linked_list_swap_nodes(linked_list* list, iter_t iter1, iter_2 iter2);
+void linked_list_swap_nodes(linked_list* list, iter_t iter1, iter_t iter2);
 
 /**
  * Reverses the nodes of a linked_list by their elements from [first, last).
