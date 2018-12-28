@@ -1,2 +1,4 @@
 Latex/*
 *.c
+!main.c
+*.out
