@@ -24,14 +24,14 @@ typedef node* iter_t;
 typedef const node* const_iter_t;
 
 /**
- * Initialized a linked_list object.
+ * Initialize a linked_list object.
  */
 void linked_list_init(linked_list* list);
 
 /**
  * Copies a linked_list and all of its elements.
  * The two lists should be fully independent of each other.
- * Assume the destination list is empty.
+ * Assume the destination list is initialized but empty.
  */
 void linked_list_copy(linked_list* dest, const linked_list* src);
 
