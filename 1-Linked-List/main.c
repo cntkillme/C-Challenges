@@ -110,7 +110,7 @@ void test_required_interface(size_t* const success, size_t* const total)
 	PRINT_LIST(list1, "list1: ");
 	TEST(linked_list_size(list1) == 1, "empty list size after push_front is NOT 1");
 	TEST(linked_list_front(list1) == 123.0, "empty list front after push_front is NOT 123.0");
-	TEST(linked_list_back(list1) == 123.0, "empty list back after push_fron is NOT 123.0");
+	TEST(linked_list_back(list1) == 123.0, "empty list back after push_front is NOT 123.0");
 
 	linked_list_push_front(list1, 456.0); // 456.0, 123.0
 	PRINT_LIST(list1, "list1: ");
