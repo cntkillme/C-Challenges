@@ -1,4 +1,7 @@
+#include <stdbool.h>
 #include <stddef.h>
+ // stdbool.h for bool
+ // stddef.h for size_t, ptrdiff_t
 
 struct linked_list;
 struct node;
@@ -18,8 +21,8 @@ typedef struct node
 	value_t value;
 } node;
 
-typedef int (*comparator_t)(value_t, value_t);
-typedef void (*callback_t)(value_t);
+typedef bool (*comparator_t)(const value_t*, const value_t*);
+typedef void (*callback_t)(const value_t*);
 typedef node* iter_t;
 typedef const node* const_iter_t;
 
