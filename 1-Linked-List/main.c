@@ -402,6 +402,10 @@ void test_iterator_interface(size_t* const success, size_t* const total)
 		linked_list_begin(list), 1)) == 20.0, "begin + 1 value is NOT 20.0");
 	TEST(linked_list_read(list, linked_list_advance(list,
 		linked_list_begin(list), 2)) == 30.0, "begin + 2 value is NOT 30.0");
+	TEST(linked_list_read(list, linked_list_advance(list,
+		linked_list_end(list), -1)) == 30.0, "end - 1 value is NOT 30.0");
+	TEST(linked_list_read(list, linked_list_advance(list,
+		linked_list_end(list), -2)) == 20.0, "end - 2 value is NOT 20.0");
 
 	DEBUG_WRITE("dist(begin, begin): %td \n", linked_list_dist(list, linked_list_begin(list),
 		linked_list_begin(list)));
@@ -438,6 +442,36 @@ void test_iterator_interface(size_t* const success, size_t* const total)
 		linked_list_begin(list)));
 	TEST(linked_list_dist(list, linked_list_end(list),
 		linked_list_begin(list)) == -3, "dist(end, begin) is NOT -3");
+
+	DEBUG_WRITE("dist(begin + 1, begin + 2): %td \n", linked_list_dist(list,
+		linked_list_advance(list, linked_list_begin(list), 1),
+		linked_list_advance(list, linked_list_begin(list), 2)));
+	TEST(linked_list_dist(list,
+		linked_list_advance(list, linked_list_begin(list), 1),
+		linked_list_advance(list, linked_list_begin(list), 2)) == 1, "dist(begin + 1, begin + 2) is NOT 1");
+
+	DEBUG_WRITE("dist(begin + 2, begin + 1): %td \n", linked_list_dist(list,
+		linked_list_advance(list, linked_list_begin(list), 2),
+		linked_list_advance(list, linked_list_begin(list), 1)));
+	TEST(linked_list_dist(list,
+		linked_list_advance(list, linked_list_begin(list), 2),
+		linked_list_advance(list, linked_list_begin(list), 1)) == -1, "dist(begin + 2, begin + 1) is NOT -1");
+
+	DEBUG_WRITE("dist(end - 2, end - 1): %td \n", linked_list_dist(list,
+		linked_list_advance(list, linked_list_end(list), -2),
+		linked_list_advance(list, linked_list_end(list), -1)));
+	TEST(linked_list_dist(list,
+		linked_list_advance(list, linked_list_end(list), -2),
+		linked_list_advance(list, linked_list_end(list), -1)) == 1, "dist(end - 2, end - 1) is NOT 1");
+
+	DEBUG_WRITE("dist(end - 1, end - 2): %td \n", linked_list_dist(list,
+		linked_list_advance(list, linked_list_end(list), -1),
+		linked_list_advance(list, linked_list_end(list), -2)));
+	TEST(linked_list_dist(list,
+		linked_list_advance(list, linked_list_end(list), -1),
+		linked_list_advance(list, linked_list_end(list), -2)) == -1, "dist(end - 1, end - 2) is NOT -1");
+
+	linked_list_clear(list);
 }
 
 void test_extra_iterator_functionality(size_t* const success, size_t* const total)
