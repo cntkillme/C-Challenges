@@ -7,7 +7,7 @@
 #define RUN_TESTS(name, func) \
 	printf("Testing " name "...\n"); \
 	func(&success, &total); \
-	printf("%lu/%lu tests passed.\n\n", success, total); \
+	printf("%zu/%zu tests passed.\n\n", success, total); \
 	totalSuccess += success; \
 	totalTotal += total; \
 	success = total = 0
@@ -18,7 +18,7 @@
 if (expr) \
 	*success += 1; \
 else \
-	printf("Test %lu failed (line %d): %s\n", *total, line, msg)
+	printf("Test %zu failed (line %d): %s\n", *total, line, msg)
 
 #ifdef DEBUG_OUTPUT
 	#define DEBUG_WRITE(...) printf("[Line %4d]: ", __LINE__); printf(__VA_ARGS__)
@@ -330,11 +330,114 @@ void test_extra_functionality(size_t* const success, size_t* const total)
 		DEBUG_WRITE(" expected: %.0f\n", expectedSum);
 
 		TEST(*get_sum(false) == expectedSum, "sum of list is NOT expected sum");
+
+		linked_list_clear(list1);
 	}
 }
 
 void test_iterator_interface(size_t* const success, size_t* const total)
 {
+	linked_list _list;
+	linked_list* list = &_list;
+
+	linked_list_init(list);
+
+	TEST(linked_list_begin(list) == linked_list_end(list), "empty list begin is NOT end");
+
+	linked_list_push_back(list, 5.0);
+	PRINT_LIST(list, "list: ");
+	TEST(linked_list_begin(list) != linked_list_end(list), "non-empty list begin IS end");
+	TEST(linked_list_read(list, linked_list_begin(list)) == 5.0, "value at index 0 is NOT 5.0");
+	TEST(linked_list_write(list, linked_list_begin(list), 10.0) == 5.0, "value returned after write at index 0 is NOT 5.0");
+	PRINT_LIST(list, "list: ");
+	TEST(linked_list_read(list, linked_list_begin(list)) == 10.0, "value at index 0 is NOT 10.0");
+
+	linked_list_push_back(list, 20.0); linked_list_push_back(list, 30.0);
+	PRINT_LIST(list, "list: ");
+	{
+		iter_t iter;
+
+		iter = linked_list_insert(list, linked_list_begin(list), 0.0);
+		PRINT_LIST(list, "list: ");
+		TEST(linked_list_size(list) == 4, "size of list is NOT 4");
+		TEST(linked_list_front(list) == 0.0, "value at front is NOT 0.0");
+		TEST(iter == linked_list_begin(list), "returned iter from insert is NOT first");
+
+		iter = linked_list_insert(list, linked_list_end(list), 50.0);
+		PRINT_LIST(list, "list: ");
+		TEST(linked_list_size(list) == 5, "size of list is NOT 5");
+		TEST(linked_list_back(list) == 50.0, "value at back is NOT 50.0");
+
+		iter = linked_list_insert(list, iter, 40.0);
+		PRINT_LIST(list, "list: ");
+		TEST(linked_list_size(list) == 6, "size of list is NOT 6");
+		TEST(linked_list_back(list) == 50.0, "value at back is NOT 50.0");
+
+		linked_list_erase(list, linked_list_begin(list));
+		PRINT_LIST(list, "list: ");
+		TEST(linked_list_size(list) == 5, "size of list is NOT 5");
+		TEST(linked_list_front(list) == 10.0, "value at front is NOT 10.0");
+
+		iter = linked_list_erase(list, iter);
+		PRINT_LIST(list, "list: ");
+		TEST(linked_list_size(list) == 4, "size of list is NOT 4");
+
+		linked_list_erase(list, iter);
+		PRINT_LIST(list, "list: ");
+		TEST(linked_list_size(list) == 3, "size of list is NOT 3");
+		TEST(linked_list_back(list) == 30.0, "value at back is NOT 30.0");
+	}
+
+	TEST(linked_list_advance(list,
+		linked_list_begin(list), 0) == linked_list_begin(list), "begin + 0 is NOT begin");
+	TEST(linked_list_advance(list,
+		linked_list_begin(list), 3) == linked_list_end(list), "begin + 3 is NOT end");
+	TEST(linked_list_advance(list,
+		linked_list_end(list), 0) == linked_list_end(list), "end + 0 is NOT end");
+	TEST(linked_list_advance(list,
+		linked_list_end(list), -3) == linked_list_begin(list), "end - 3 is NOT begin");
+	TEST(linked_list_read(list, linked_list_advance(list,
+		linked_list_begin(list), 0)) == 10.0, "begin + 0 value is NOT 10.0");
+	TEST(linked_list_read(list, linked_list_advance(list,
+		linked_list_begin(list), 1)) == 20.0, "begin + 1 value is NOT 20.0");
+	TEST(linked_list_read(list, linked_list_advance(list,
+		linked_list_begin(list), 2)) == 30.0, "begin + 2 value is NOT 30.0");
+
+	DEBUG_WRITE("dist(begin, begin): %td \n", linked_list_dist(list, linked_list_begin(list),
+		linked_list_begin(list)));
+	TEST(linked_list_dist(list, linked_list_begin(list),
+		linked_list_advance(list,
+			linked_list_begin(list), 0)) == 0, "dist(begin, begin) is NOT 0");
+
+	DEBUG_WRITE("dist(begin, begin + 1): %td \n", linked_list_dist(list, linked_list_begin(list),
+		linked_list_advance(list,
+			linked_list_begin(list), 1)));
+	TEST(linked_list_dist(list, linked_list_begin(list),
+		linked_list_advance(list,
+			linked_list_begin(list), 1)) == 1, "dist(begin, begin + 1) is NOT 1");
+
+	DEBUG_WRITE("dist(begin, end): %td \n", linked_list_dist(list, linked_list_begin(list),
+		linked_list_end(list)));
+	TEST(linked_list_dist(list, linked_list_begin(list),
+		linked_list_end(list)) == 3, "dist(begin, end) is NOT 3");
+
+	DEBUG_WRITE("dist(end, end): %td \n", linked_list_dist(list, linked_list_end(list),
+		linked_list_end(list)));
+	TEST(linked_list_dist(list, linked_list_end(list),
+		linked_list_advance(list,
+			linked_list_end(list), 0)) == 0, "dist(end, end) is NOT 0");
+
+	DEBUG_WRITE("dist(end, end - 1): %td \n", linked_list_dist(list, linked_list_end(list),
+		linked_list_advance(list,
+			linked_list_end(list), -1)));
+	TEST(linked_list_dist(list, linked_list_end(list),
+		linked_list_advance(list,
+			linked_list_end(list), -1)) == -1, "dist(end, end - 1) is NOT -1");
+
+	DEBUG_WRITE("dist(end, begin): %td \n", linked_list_dist(list, linked_list_end(list),
+		linked_list_begin(list)));
+	TEST(linked_list_dist(list, linked_list_end(list),
+		linked_list_begin(list)) == -3, "dist(end, begin) is NOT -3");
 }
 
 void test_extra_iterator_functionality(size_t* const success, size_t* const total)

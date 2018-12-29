@@ -32,8 +32,7 @@ typedef const node* const_iter_t;
 void linked_list_init(linked_list* list);
 
 /**
- * Copies a linked_list and all of its elements. The two lists
- *  should be fully independent of each other.
+ * Copies a linked_list and all of its elements. The two lists should be fully independent of each other.
  * Assume the destination list is empty.
  */
 void linked_list_copy(linked_list* dest, const linked_list* src);
@@ -44,8 +43,7 @@ void linked_list_copy(linked_list* dest, const linked_list* src);
 void linked_list_clear(linked_list* list);
 
 /**
- * Resizes a linked_list to the given size. For newly created nodes,
- *  initialize them with the given value.
+ * Resizes a linked_list to the given size. For newly created nodes, initialize them with the given value.
  */
 void linked_list_resize(linked_list* list, size_t newSize, value_t value);
 
@@ -94,8 +92,7 @@ value_t linked_list_pop_back(linked_list* list);
 value_t linked_list_get(const linked_list* list, size_t idx);
 
 /**
- * Alters the element at the given index of a linked_list and
- *  returns the old value.
+ * Alters the element at the given index of a linked_list and returns the old value.
  * Assume idx is in the range [0, size)
  */
 value_t linked_list_set(linked_list* list, size_t idx, value_t newValue);
@@ -103,7 +100,7 @@ value_t linked_list_set(linked_list* list, size_t idx, value_t newValue);
 /**
  * Reverses the elements of a linked_list.
  */
- void linked_list_reverse(linked_list* list);
+void linked_list_reverse(linked_list* list);
 
 /**
  * Sorts the elements of a linked_list in the order defined by the comparator.
@@ -111,8 +108,7 @@ value_t linked_list_set(linked_list* list, size_t idx, value_t newValue);
 void linked_list_sort(linked_list* list, comparator_t comparator);
 
 /**
-* Appends one linked_list to the end of another. The source list should
-*  be an empty list.
+* Appends one linked_list to the end of another. The source list should be an empty list.
 * The source linked_list should become an empty linked list.
 */
 void linked_list_append(linked_list* dest, linked_list* src);
@@ -128,8 +124,7 @@ void linked_list_foreach(const linked_list* list, callback_t callback);
 void linked_list_swap(linked_list* list1, linked_list* link2);
 
 /**
- * Returns an iterator to the first element of a linked_list. If the
- *  list is empty, the end iterator is returned.
+ * Returns an iterator to the first element of a linked_list. If the list is empty, the end iterator is returned.
  */
 iter_t linked_list_begin(linked_list* list);
 
@@ -151,21 +146,18 @@ value_t linked_list_read(const linked_list* list, const_iter_t iter);
 value_t linked_list_write(linked_list* list, iter_t iter, value_t value);
 
 /**
- * Advances an iterator by a number of steps, a negative step
- *  indicates advancing backwards.
+ * Advances an iterator by a number of steps, a negative step indicates advancing backwards.
  * Assume iter + steps will be in the range [begin, end].
  */
-iter_t linked_list_advance(const linked_list* list, const_iter_t iter, ptrdiff_t steps);
+iter_t linked_list_advance(linked_list* list, iter_t iter, ptrdiff_t steps);
 
 /**
- * Inserts an element before a given iterator and
- *  returns an iterator to the new element.
+ * Inserts an element before a given iterator and returns an iterator to the new element.
  */
 iter_t linked_list_insert(linked_list* list, iter_t iter, value_t value);
 
 /**
- * Erases an element at the given iterator and
- *  returns the iterator following the erased element.
+ * Erases an element at the given iterator and returns the iterator following the erased element.
  * Assume iter is in the range [begin, end).
  */
 iter_t linked_list_erase(linked_list* list, iter_t iter);
@@ -173,25 +165,20 @@ iter_t linked_list_erase(linked_list* list, iter_t iter);
 /**
  * Returns the distance between two nodes, negative if first comes after last.
  */
-ptrdiff_t linked_list_dist(linked_list* list, const_iter_t first,
-  const_iter_t last);
+ptrdiff_t linked_list_dist(linked_list* list, const_iter_t iter1, const_iter_t iter2);
 
 /**
- * Inserts some number elements before the given iterator that are
- *  initialized with then given value.
+ * Inserts some number elements before the given iterator that are initialized with then given value.
  * Returns an iterator to the first inserted element.
  */
-iter_t linked_list_insert_many(linked_list* list, iter_t begin, size_t count,
-  value_t value);
+iter_t linked_list_insert_many(linked_list* list, iter_t begin, size_t count, value_t value);
 
 /**
- * Inserts nodes in [first, last) before dest. Beware of
- *  overlapping between the nodes and the dest.
+ * Inserts nodes in [first, last) before dest. Beware of overlapping between the nodes and the dest.
  * Assume dist(first, last) is non-negative and first != end.
  * Returns an iterator to the first inserted element.
  */
-iter_t linked_list_insert_range(linked_list* list, iter_t dest,
-  const_iter_t first, const_iter_t last);
+iter_t linked_list_insert_range(linked_list* list, iter_t dest, const_iter_t first, const_iter_t last);
 
 /**
  * Erases all elements in the range [first, last)
@@ -213,9 +200,7 @@ void linked_list_swap_nodes(linked_list* list, iter_t iter1, iter_t iter2);
 void linked_list_reverse_nodes(linked_list* list, iter_t first, iter_t last);
 
 /**
- * Sorts the nodes of a linked_list by their elements from [first, last)
- *  in the order defined by a comparator.
+ * Sorts the nodes of a linked_list by their elements from [first, last) in the order defined by a comparator.
  * Assume dist(first, last) is non-negative, and and first != end.
  */
-void linked_list_sort_nodes(linked_list* list, iter_t first, iter_t last,
-  comparator_t comparator);
+void linked_list_sort_nodes(linked_list* list, iter_t first, iter_t last, comparator_t comparator);
