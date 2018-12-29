@@ -131,12 +131,12 @@ void linked_list_swap(linked_list* list1, linked_list* link2);
  * Returns an iterator to the first element of a linked_list. If the
  *  list is empty, the end iterator is returned.
  */
-iter_t linked_list_begin(const linked_list* list);
+iter_t linked_list_begin(linked_list* list);
 
 /**
  * Returns an iterator to one after the last element of a linked_list.
  */
-iter_t linked_list_end(const linked_list* list);
+iter_t linked_list_end(linked_list* list);
 
 /**
  * Returns the element associated with an iterator.
@@ -148,14 +148,14 @@ value_t linked_list_read(const linked_list* list, const_iter_t iter);
  * Alters the element associated with an iterator and returns the old value.
  * Assume iter is in the range [begin, end).
  */
-value_t linked_list_write(const linked_list* list, iter_t iter);
+value_t linked_list_write(linked_list* list, iter_t iter, value_t value);
 
 /**
  * Advances an iterator by a number of steps, a negative step
  *  indicates advancing backwards.
  * Assume iter + steps will be in the range [begin, end].
  */
-iter_t linked_list_advance(const linked_list* list, iter_t iter, ptrdiff_t steps);
+iter_t linked_list_advance(const linked_list* list, const_iter_t iter, ptrdiff_t steps);
 
 /**
  * Inserts an element before a given iterator and
