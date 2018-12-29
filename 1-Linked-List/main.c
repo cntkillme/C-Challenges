@@ -4,13 +4,15 @@
 #include <string.h>
 #include "linked_list.h"
 
-/// TEST INTERFACE ///
-#define RUN_TESTS(name, func) { \
+#define RUN_TESTS(name, func) \
 	printf("Testing " name "...\n"); \
 	func(&success, &total); \
 	printf("%lu/%lu tests passed.\n\n", success, total); \
-	success = total = 0; \
-}
+	totalSuccess += success; \
+	totalTotal += total; \
+	success = total = 0
+
+#define TEST(expr, msg) TEST_IMPL(expr, msg, __LINE__)
 
 #define TEST_IMPL(expr, msg, line) *total += 1; \
 if (expr) \
@@ -18,36 +20,36 @@ if (expr) \
 else \
 	printf("Test %lu failed (line %d): %s\n", *total, line, msg)
 
-#define TEST(expr, msg) TEST_IMPL(expr, msg, __LINE__)
+#ifdef DEBUG_OUTPUT
+	#define DEBUG_WRITE(...) printf("[Line %4d]: ", __LINE__); printf(__VA_ARGS__)
+	#define PRINT_ARRAY(arr, str) DEBUG_WRITE(str); print_array(arr, sizeof(arr)/sizeof(value_t))
+	#define PRINT_LIST(list, str) DEBUG_WRITE(str); print_list(list)
+	#define PRINT_VAL(val) printf("%3.0f ", val)
+#else
+	#define DEBUG_WRITE(...) (void)0
+	#define PRINT_ARRAY(arr, str) (void)0
+	#define PRINT_LIST(list, str) (void)0
+	#define PRINT_VAL(val) (void)0
+#endif
 
 static void test_required_interface(size_t* const success, size_t* const total);
 static void test_extra_functionality(size_t* const success, size_t* const total);
 static void test_iterator_interface(size_t* const success, size_t* const total);
 static void test_extra_iterator_functionality(size_t* const success, size_t* const total);
 
-/// CALLBACKS ///
+static void print_array(const value_t* arr, size_t size);
+static void print_list(const linked_list* list);
 static bool less_than_comparator(const value_t* left, const value_t* right);
 static int less_than_comparator_qsort(const void* left, const void* right);
 static void sum_list(const value_t* value);
 static value_t* get_sum(bool reset);
 
-/// DEBUGGING HELPERS ///
-#ifdef DEBUG_OUTPUT
-	#define PRINT_ARRAY(arr, pre) print_array(arr, sizeof(arr)/sizeof(value_t), pre, __LINE__)
-	#define PRINT_LIST(list, pre) print_list(list, pre, __LINE__)
-#else
-	#define PRINT_ARRAY(arr, pre) (void)0
-	#define PRINT_LIST(list, pre) (void)0
-#endif
-
-static void print_value(const value_t* value);
-static void print_array(value_t* arr, size_t size, const char* const preMsg, int line);
-static void print_list(linked_list* list, const char* const preMsg, int line);
-
 int main(void)
 {
 	size_t success = 0;
 	size_t total = 0;
+	size_t totalSuccess = 0;
+	size_t totalTotal = 0;
 
 	#ifdef TEST_REQUIRED_INTERFACE
 		RUN_TESTS("Required Interface", test_required_interface);
@@ -65,7 +67,7 @@ int main(void)
 		RUN_TESTS("Extra Iterator Functionality", test_extra_iterator_functionality);
 	#endif
 
-	printf("All tests completed.\n");
+	printf("All tests completed, summary: %lu/%lu tests passed.\n", totalSuccess, totalTotal);
 
 	return 0;
 }
@@ -324,10 +326,8 @@ void test_extra_functionality(size_t* const success, size_t* const total)
 		get_sum(true);
 		linked_list_foreach(list1, sum_list);
 
-		#ifdef DEBUG_OUTPUT
-			printf("[Line %4d]      sum: %f\n", __LINE__, *get_sum(false));
-			printf("[Line %4d] expected: %f\n", __LINE__, expectedSum);
-		#endif
+		DEBUG_WRITE("      sum: %.0f\n", *get_sum(false));
+		DEBUG_WRITE(" expected: %.0f\n", expectedSum);
 
 		TEST(*get_sum(false) == expectedSum, "sum of list is NOT expected sum");
 	}
@@ -339,6 +339,23 @@ void test_iterator_interface(size_t* const success, size_t* const total)
 
 void test_extra_iterator_functionality(size_t* const success, size_t* const total)
 {
+}
+
+void print_array(const value_t* arr, size_t size)
+{
+	for (size_t idx = 0; idx < size; idx++)
+		PRINT_VAL(arr[idx]);
+	printf("\n");
+}
+
+void print_list(const linked_list* list)
+{
+	node* iter;
+	size_t idx;
+
+	for (iter = list->first, idx = 0; idx < list->size && iter != NULL; idx++, iter = iter->next)
+		PRINT_VAL(iter->value);
+	printf("\n");
 }
 
 bool less_than_comparator(const value_t* left, const value_t* right)
@@ -364,32 +381,4 @@ value_t* get_sum(bool reset)
 		sum = 0;
 
 	return &sum;
-}
-
-void print_value(const value_t* value)
-{
-	printf("%3.0f ", *value);
-}
-
-void print_array(value_t* arr, size_t size, const char* const preMsg, int line)
-{
-	printf("[Line %4d]: %s", line, preMsg);
-
-	for (size_t idx = 0; idx < size; idx++)
-		print_value(&arr[idx]);
-
-	printf("\n");
-}
-
-void print_list(linked_list* list, const char* const preMsg, int line)
-{
-	node* iter;
-	size_t idx;
-
-	printf("[Line %4d]: %s", line, preMsg);
-
-	for (iter = list->first, idx = 0; idx < list->size && iter != NULL; idx++, iter = iter->next)
-		print_value(&iter->value);
-
-	printf("\n");
 }

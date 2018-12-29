@@ -9,10 +9,10 @@
 OPTIONS := TEST_REQUIRED_INTERFACE TEST_EXTRA_FUNCTIONALITY
 
 all:
-	gcc -Wall -pedantic -O3 -std=c99 $(addprefix -D, $(OPTIONS)) main.c linked_list.c -o main.out -lm
+	gcc -Wall -pedantic -O3 -std=c99 -Wno-unused-function $(addprefix -D, $(OPTIONS)) main.c linked_list.c -o main.out
 
 debug:
-	gcc -Wall -pedantic -O3 -std=c99 -D DEBUG_OUTPUT $(addprefix -D, $(OPTIONS)) main.c linked_list.c -o main.out -lm
+	gcc -Wall -pedantic -O3 -std=c99 -Wno-unused-function -D DEBUG_OUTPUT $(addprefix -D, $(OPTIONS)) main.c linked_list.c -o main.out
 
 clean:
-	rm -f main.out
+	rm -f *.o *.out
