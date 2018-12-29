@@ -629,6 +629,70 @@ void test_extra_iterator_functionality(size_t* const success, size_t* const tota
 		TEST(iter == linked_list_begin(list), "returned iter from erase_range is NOT begin");
 	}
 
+	{
+		// 1 2 3 4 5 6 7 8 9 10
+		linked_list_resize(list, 10, 0.0);
+
+		iter_t iter1;
+		iter_t iter2;
+
+		iter1 = linked_list_begin(list);
+		iter2 = linked_list_advance(list, iter1, 1);
+
+		// 2 1 3 4 5 6 7 8 9 10
+		linked_list_swap_nodes(list, iter1, iter2); // null iter1 iter2 ?
+		PRINT_LIST(list, "list: ");
+
+		TEST(iter1 == linked_list_advance(list,
+			linked_list_begin(list), 1), "iter1 after swap is NOT begin + 1");
+		TEST(linked_list_read(list, iter1) == 1.0, "value at iter1 is NOT 1.0");
+		TEST(iter2 == linked_list_begin(list), "iter2 afer swap is NOT begin");
+		TEST(linked_list_read(list, iter2) == 2.0, "value at iter2 is NOT 2.0");
+
+		iter2 = linked_list_advance(list, iter1, 2); // 2 iter1 ? iter2 ?
+
+		// 2 4 3 1 5 6 7 8 9 10
+		linked_list_swap_nodes(list, iter1, iter2);
+		PRINT_LIST(list, "list: ");
+		TEST(iter1 == linked_list_advance(list,
+			linked_list_begin(list), 3), "iter1 after swap is NOT begin + 3");
+		TEST(linked_list_read(list, iter1) == 1.0, "value at iter1 is NOT 1.0");
+		TEST(iter2 == linked_list_advance(list,
+			linked_list_begin(list), 1), "iter2 after swap is NOT begin + 1");
+		TEST(linked_list_read(list, iter2) == 4.0, "value at iter2 is NOT 4.0");
+
+		iter1 = linked_list_advance(list, linked_list_end(list), -1);
+		iter2 = linked_list_begin(list);
+
+		// 10 4 3 1 5 6 7 8 9 2
+		linked_list_swap_nodes(list, iter1, iter2);
+		PRINT_LIST(list, "list: ");
+		TEST(iter1 == linked_list_begin(list), "iter1 after swap is NOT begin");
+		TEST(linked_list_read(list, iter1) == 10.0, "value at iter1 is NOT 10.0");
+		TEST(iter2 == linked_list_advance(list,
+			linked_list_end(list), -1), "iter2 after swap is NOT end - 1");
+		TEST(linked_list_read(list, iter2) == 2.0, "value at iter2 is NOT 2.0");
+
+		linked_list_swap_nodes(list, iter1, iter1);
+		TEST(iter1 == iter1, "iter1 after self-swap is NOT iter1");
+
+		// 10 4
+		linked_list_resize(list, 2, 0.0);
+		PRINT_LIST(list, "list: ");
+
+		iter1 = linked_list_begin(list);
+		iter2 = linked_list_advance(list, iter1, 1);
+
+		// 4 10
+		linked_list_swap_nodes(list, iter1, iter2);
+		PRINT_LIST(list, "list: ");
+		TEST(iter1 == linked_list_advance(list,
+			linked_list_begin(list), 1), "iter1 after swap is NOT begin + 1");
+		TEST(linked_list_read(list, iter1) == 10.0, "value at iter1 is NOT 10.0");
+		TEST(iter2 == linked_list_begin(list), "iter2 afer swap is NOT begin");
+		TEST(linked_list_read(list, iter2) == 4.0, "value at iter2 is NOT 4.0");
+	}
+
 	linked_list_clear(list);
 }
 
