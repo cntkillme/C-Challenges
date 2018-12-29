@@ -181,7 +181,7 @@ iter_t linked_list_insert_many(linked_list* list, iter_t begin, size_t count, va
 iter_t linked_list_erase_many(linked_list* list, iter_t begin, size_t count);
 
 /**
- * Inserts nodes in [first, last) before dest. Beware of overlapping between the nodes and the dest.
+ * Inserts some elements from the range [first, last) before dest.
  * Assume dist(first, last) is non-negative and first != end.
  * Returns an iterator to the first inserted element (or dest if first = last).
  */

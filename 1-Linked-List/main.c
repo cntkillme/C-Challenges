@@ -505,6 +505,10 @@ void test_extra_iterator_functionality(size_t* const success, size_t* const tota
 	{
 		iter_t iter;
 
+		TEST(linked_list_insert_many(list,
+			linked_list_begin(list), 0, 0.0) == linked_list_begin(list),
+			"returned iter from insert_many (count = 0) is NOT begin");
+
 		// 0 0 0 1 2 3 4 5 6 7 8 9 10
 		iter = linked_list_insert_many(list, linked_list_begin(list), 3, 0.0);
 		PRINT_LIST(list, "list: ");
@@ -519,8 +523,8 @@ void test_extra_iterator_functionality(size_t* const success, size_t* const tota
 		TEST(linked_list_size(list) == 15, "list size is NOT 15");
 		TEST(linked_list_front(list) == 0.0, "value at front is NOT 0.0");
 		TEST(linked_list_back(list) == 20.0, "value at back is NOT 20.0");
-		TEST(iter == linked_list_advance(
-			list, linked_list_end(list), -2), "returned iter from insert_many is NOT end - 2");
+		TEST(iter == linked_list_advance(list,
+			linked_list_end(list), -2), "returned iter from insert_many is NOT end - 2");
 
 		// 0 0 0 1 2 3 4 5 6 7 8 9 10 20 20 20
 		iter = linked_list_insert_many(list, iter, 1, 20.0);
@@ -528,8 +532,12 @@ void test_extra_iterator_functionality(size_t* const success, size_t* const tota
 		TEST(linked_list_size(list) == 16, "list size is NOT 16");
 		TEST(linked_list_front(list) == 0.0, "value at front is NOT 0.0");
 		TEST(linked_list_back(list) == 20.0, "value at back is NOT 20.0");
-		TEST(iter == linked_list_advance(
-			list, linked_list_end(list), -3), "returned iter from insert_many is NOT end - 3");
+		TEST(iter == linked_list_advance(list,
+		linked_list_end(list), -3), "returned iter from insert_many is NOT end - 3");
+
+		TEST(linked_list_erase_many(list,
+			linked_list_begin(list), 0) == linked_list_begin(list),
+			"returned iter from erase_many (count = 0) is NOT begin");
 
 		// 0 0 0 1 2 3 4 5 6 7 8 9 10 20 20
 		iter = linked_list_erase_many(list, iter, 1);
@@ -537,11 +545,11 @@ void test_extra_iterator_functionality(size_t* const success, size_t* const tota
 		TEST(linked_list_size(list) == 15, "list size is NOT 15");
 		TEST(linked_list_front(list) == 0.0, "value at front is NOT 0.0");
 		TEST(linked_list_back(list) == 20.0, "value at back is NOT 20.0");
-		TEST(iter == linked_list_advance(
-			list, linked_list_end(list), -2), "returned iter from insert_many is NOT end - 2");
+		TEST(iter == linked_list_advance(list,
+			linked_list_end(list), -2), "returned iter from insert_many is NOT end - 2");
 
 		// 0 0 0 1 2 3 4 5 6 7 8 9 10
-		iter = linked_list_erase_many(list, iter, 2);
+		iter = linked_list_erase_many(list, iter, 999);
 		PRINT_LIST(list, "list: ");
 		TEST(linked_list_size(list) == 13, "list size is NOT 13");
 		TEST(linked_list_front(list) == 0.0, "value at front is NOT 0.0");
@@ -556,6 +564,72 @@ void test_extra_iterator_functionality(size_t* const success, size_t* const tota
 		TEST(linked_list_back(list) == 10.0, "value at back is NOT 10.0");
 		TEST(iter == linked_list_begin(list), "returned iter from insert_many is NOT begin");
 	}
+
+	{
+		iter_t iter;
+
+		TEST(linked_list_insert_range(list, linked_list_begin(list),
+			linked_list_begin(list), linked_list_begin(list)) == linked_list_begin(list),
+			"returned iter from insert_range (count = 0) is NOT begin");
+
+		// 1 2 3 4 5 6 7 8 9 10 1 2 3 4 5
+		iter = linked_list_insert_range(list, linked_list_end(list),
+			linked_list_begin(list),
+			linked_list_advance(list, linked_list_begin(list), 5));
+		PRINT_LIST(list, "list: ");
+		TEST(linked_list_size(list) == 15, "list size is NOT 15");
+		TEST(linked_list_front(list) == 1.0, "value at front is NOT 1.0");
+		TEST(linked_list_back(list) == 5.0, "value at back is NOT 5.0");
+		TEST(iter == linked_list_advance(list,
+			linked_list_end(list), -5), "returned iter from insert_range is NOT end - 5");
+
+		// 1 2 3 4 5 1 2 3 4 5 6 7 8 9 10 1 2 3 4 5
+		iter = linked_list_insert_range(list, linked_list_begin(list),
+			iter, linked_list_advance(list, iter, 5));
+		PRINT_LIST(list, "list: ");
+		TEST(linked_list_size(list) == 20, "list size is NOT 20");
+		TEST(iter == linked_list_begin(list), "returned iter from insert_range is NOT begin");
+
+		// 1 2 3 4 5 6 7 8 9 10 1 2 3 4 5 6 7 8 9 10 1 2 3 4 5
+		iter = linked_list_insert_range(list, linked_list_advance(list,
+			linked_list_begin(list), 5), linked_list_advance(list,
+			linked_list_begin(list), 10), linked_list_advance(list,
+			linked_list_begin(list), 15));
+		PRINT_LIST(list, "list: ");
+		TEST(linked_list_size(list) == 25, "list size is NOT 25");
+		TEST(iter == linked_list_advance(list,
+			linked_list_begin(list), 5), "returned iter from insert_range is NOT begin + 5");
+
+		// 1 2 3 4 5 6 7 8 9 10 1 2 3 4 5 6 7 8 9 10 1 2 3 4 5 1 2 3 4 5 6 7 8 9 10
+		iter = linked_list_insert_range(list, linked_list_end(list), linked_list_advance(list,
+			linked_list_end(list), -15), linked_list_advance(list,
+			linked_list_end(list), -5));
+		PRINT_LIST(list, "list: ");
+		TEST(linked_list_size(list) == 35, "list size is NOT 35");
+		TEST(iter == linked_list_advance(list,
+			linked_list_end(list), -10), "returned iter from insert_range is NOT end - 10");
+
+		TEST(linked_list_erase_range(list,
+			linked_list_begin(list), linked_list_begin(list)) == linked_list_begin(list),
+			"returned iter from erase_range (count = 0) is NOT begin");
+
+		// 1 2 3 4 5 6 7 8 9 10 1 2 3 4 5 6 7 8 9 10 1 2 3 4 5 6 7 8 9 10
+		iter = linked_list_erase_range(list, iter, linked_list_advance(list,
+			iter, 5));
+		PRINT_LIST(list, "list: ");
+		TEST(linked_list_size(list) == 30, "list size is NOT 30");
+		TEST(iter == linked_list_advance(list,
+			linked_list_end(list), -5), "returned iter from erase_range is NOT end - 5");
+
+		// 1 2 3 4 5 6 7 8 9 10 1 2 3 4 5 6 7 8 9 10
+		iter = linked_list_erase_range(list, linked_list_begin(list), linked_list_advance(list,
+			linked_list_begin(list), 10));
+		PRINT_LIST(list, "list: ");
+		TEST(linked_list_size(list) == 20, "list size is NOT 20");
+		TEST(iter == linked_list_begin(list), "returned iter from erase_range is NOT begin");
+	}
+
+	linked_list_clear(list);
 }
 
 void print_array(const value_t* arr, size_t size)
