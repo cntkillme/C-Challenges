@@ -142,6 +142,8 @@ void test_required_interface(size_t* const success, size_t* const total)
 
 	TEST(linked_list_get(list1, 0) == 123.0, "value at index 0 is NOT 123.0");
 	TEST(linked_list_set(list1, 0, 456.0) == 123.0, "value returned after set at index 0 is NOT 123.0");
+
+	// 456.0
 	TEST(linked_list_get(list1, 0) == 456.0, "value at index 0 is NOT 456.0");
 	TEST(linked_list_front(list1) == 456.0, "value at front is NOT 456.0");
 	TEST(linked_list_back(list1) == 456.0, "value at back is NOT 456.0");
@@ -155,6 +157,7 @@ void test_required_interface(size_t* const success, size_t* const total)
 		bool setsValid = true;
 		bool getsValid = true;
 
+		// 555 555 ... 555
 		linked_list_resize(list1, 16, 555.0);
 		PRINT_LIST(list1, "list1: ");
 
@@ -168,6 +171,8 @@ void test_required_interface(size_t* const success, size_t* const total)
 		TEST(setsValid, "value(s) returned after set on 555.0-initialized list is NOT 555.0");
 		TEST(getsValid, "value(s) returned from get on list is NOT identical");
 	}
+
+	linked_list_clear(list1);
 }
 
 void test_extra_functionality(size_t* const success, size_t* const total)
@@ -178,13 +183,13 @@ void test_extra_functionality(size_t* const success, size_t* const total)
 	linked_list* list1 = &_list1;
 	linked_list* list2 = &_list2;
 	linked_list* list3 = &_list3;
-	value_t values[32];
+	value_t values[16];
 
 	linked_list_init(list1);
 	linked_list_init(list2);
 	linked_list_init(list3);
 
-	for (size_t idx = 0; idx < 32; idx++) {
+	for (size_t idx = 0; idx < 16; idx++) {
 		value_t value = (value_t)(rand()%100);
 		values[idx] = value;
 		linked_list_push_back(list1, value);
@@ -198,19 +203,19 @@ void test_extra_functionality(size_t* const success, size_t* const total)
 	{
 		linked_list_reverse(list1);
 		PRINT_LIST(list1, " list1: ");
-		TEST(linked_list_size(list1) == 32, "reversed even list size is NOT 32");
-		TEST(linked_list_front(list1) == values[31], "reversed even list front is NOT values[31]");
+		TEST(linked_list_size(list1) == 16, "reversed even list size is NOT 16");
+		TEST(linked_list_front(list1) == values[15], "reversed even list front is NOT values[15]");
 		TEST(linked_list_back(list1) == values[0], "reversed even list back is NOT values[0]");
-		TEST(linked_list_get(list1, 15) == values[16], "reversed even list center-left is NOT values[16]");
-		TEST(linked_list_get(list1, 16) == values[15], "reversed even list center-right is NOT values[15]");
+		TEST(linked_list_get(list1, 7) == values[8], "reversed even list center-left is NOT values[8]");
+		TEST(linked_list_get(list1, 8) == values[7], "reversed even list center-right is NOT values[7]");
 
 		{
 			bool allEqual = true;
 			PRINT_LIST(list1, " list1: ");
 			PRINT_ARRAY(values, "values: ");
 
-			for (size_t idx = 0; idx < 32 && allEqual; idx++)
-				if (linked_list_get(list1, idx) != values[31 - idx])
+			for (size_t idx = 0; idx < 16 && allEqual; idx++)
+				if (linked_list_get(list1, idx) != values[15 - idx])
 					allEqual = false;
 
 			TEST(allEqual, "reversed even list not equal to reversed values array");
@@ -221,14 +226,14 @@ void test_extra_functionality(size_t* const success, size_t* const total)
 
 		{
 			bool allEqual = true;
-			value_t sortedValues[32];
+			value_t sortedValues[16];
 
-			memcpy(sortedValues, values, 32*sizeof(value_t));
-			qsort(sortedValues, 32, sizeof(value_t), less_than_comparator_qsort);
+			memcpy(sortedValues, values, 16*sizeof(value_t));
+			qsort(sortedValues, 16, sizeof(value_t), less_than_comparator_qsort);
 			PRINT_LIST(list1,         " list1: ");
 			PRINT_ARRAY(sortedValues, "values: ");
 
-			for (size_t idx = 0; idx < 32 && allEqual; idx++)
+			for (size_t idx = 0; idx < 16 && allEqual; idx++)
 				if (linked_list_get(list1, idx) != sortedValues[idx])
 					allEqual = false;
 
@@ -241,28 +246,28 @@ void test_extra_functionality(size_t* const success, size_t* const total)
 	linked_list_swap(list1, list2);
 	PRINT_LIST(list1, " list1: ");
 	PRINT_LIST(list2, " list2: ");
-	TEST(linked_list_size(list1) == 31, "list1 after swap size is NOT 31");
-	TEST(linked_list_size(list2) == 32, "list2 after swap size is NOT 32");
+	TEST(linked_list_size(list1) == 15, "list1 after swap size is NOT 15");
+	TEST(linked_list_size(list2) == 16, "list2 after swap size is NOT 16");
 
 	// test swap, reverse, sort for odd-list
 	{
 		linked_list_reverse(list1);
 		PRINT_LIST(list1, " list1: ");
-		TEST(linked_list_size(list1) == 31, "reversed odd list size is NOT 31");
-		TEST(linked_list_front(list1) == values[30], "reversed odd list front is NOT values[31]");
+		TEST(linked_list_size(list1) == 15, "reversed odd list size is NOT 15");
+		TEST(linked_list_front(list1) == values[14], "reversed odd list front is NOT values[14]");
 		TEST(linked_list_back(list1) == values[0], "reversed odd list back is NOT values[0]");
-		TEST(linked_list_get(list1, 15) == values[15], "reversed odd list center is NOT values[15]");
+		TEST(linked_list_get(list1, 7) == values[7], "reversed odd list center is NOT values[7]");
 
 		{
 			bool allEqual = true;
-			value_t _values[31];
-			memcpy(_values, values, 31*sizeof(value_t));
+			value_t _values[15];
+			memcpy(_values, values, 15*sizeof(value_t));
 
 			PRINT_LIST(list1, " list1: ");
 			PRINT_ARRAY(_values, "values: ");
 
-			for (size_t idx = 0; idx < 31 && allEqual; idx++)
-				if (linked_list_get(list1, idx) != _values[30 - idx])
+			for (size_t idx = 0; idx < 15 && allEqual; idx++)
+				if (linked_list_get(list1, idx) != _values[14 - idx])
 					allEqual = false;
 
 			TEST(allEqual, "reversed odd list not equal to reversed values array");
@@ -273,14 +278,14 @@ void test_extra_functionality(size_t* const success, size_t* const total)
 
 		{
 			bool allEqual = true;
-			value_t sortedValues[31];
+			value_t sortedValues[15];
 
-			memcpy(sortedValues, values, 31*sizeof(value_t));
-			qsort(sortedValues, 31, sizeof(value_t), less_than_comparator_qsort);
+			memcpy(sortedValues, values, 15*sizeof(value_t));
+			qsort(sortedValues, 15, sizeof(value_t), less_than_comparator_qsort);
 			PRINT_LIST(list1, " list1: ");
 			PRINT_ARRAY(sortedValues, "values: ");
 
-			for (size_t idx = 0; idx < 31 && allEqual; idx++)
+			for (size_t idx = 0; idx < 15 && allEqual; idx++)
 				if (linked_list_get(list1, idx) != sortedValues[idx])
 					allEqual = false;
 
@@ -293,20 +298,20 @@ void test_extra_functionality(size_t* const success, size_t* const total)
 	linked_list_append(list1, list2);
 	PRINT_LIST(list1, " list1: ");
 	PRINT_LIST(list2, " list2: ");
-	TEST(linked_list_size(list1) == 63, "size of list1 after list2 append is NOT 63");
+	TEST(linked_list_size(list1) == 31, "size of list1 after list2 append is NOT 31");
 	TEST(linked_list_size(list2) == 0, "size of list2 after list2 append is NOT 0");
 
 	linked_list_append(list1, list2);
 	PRINT_LIST(list1, " list1: ");
 	PRINT_LIST(list2, " list2: ");
-	TEST(linked_list_size(list1) == 63, "size of list1 after appended list2 append is NOT 63");
+	TEST(linked_list_size(list1) == 31, "size of list1 after appended list2 append is NOT 31");
 	TEST(linked_list_size(list2) == 0, "size of list2 after appended list2 append is NOT 0");
 
 	linked_list_append(list2, list1);
 	PRINT_LIST(list1, " list1: ");
 	PRINT_LIST(list2, " list2: ");
 	TEST(linked_list_size(list1) == 0, "size of list1 after list1 append is NOT 0");
-	TEST(linked_list_size(list2) == 63, "size of list2 after list1 append is NOT 63");
+	TEST(linked_list_size(list2) == 31, "size of list2 after list1 append is NOT 31");
 
 	linked_list_clear(list1);
 	linked_list_clear(list2);
@@ -352,40 +357,50 @@ void test_iterator_interface(size_t* const success, size_t* const total)
 	PRINT_LIST(list, "list: ");
 	TEST(linked_list_read(list, linked_list_begin(list)) == 10.0, "value at index 0 is NOT 10.0");
 
+	// 10 20 30
 	linked_list_push_back(list, 20.0); linked_list_push_back(list, 30.0);
 	PRINT_LIST(list, "list: ");
 	{
 		iter_t iter;
 
+		// 0 10 20 30
 		iter = linked_list_insert(list, linked_list_begin(list), 0.0);
 		PRINT_LIST(list, "list: ");
 		TEST(linked_list_size(list) == 4, "size of list is NOT 4");
-		TEST(linked_list_front(list) == 0.0, "value at front is NOT 0.0");
-		TEST(iter == linked_list_begin(list), "returned iter from insert is NOT first");
+		TEST(linked_list_read(list, iter) == 0.0, "value from returned iter from insert is NOT 0.0");
+		TEST(iter == linked_list_begin(list), "returned iter from insert is NOT begin");
 
+		// 0 10 20 30 50
 		iter = linked_list_insert(list, linked_list_end(list), 50.0);
 		PRINT_LIST(list, "list: ");
 		TEST(linked_list_size(list) == 5, "size of list is NOT 5");
-		TEST(linked_list_back(list) == 50.0, "value at back is NOT 50.0");
+		TEST(linked_list_read(list, iter) == 50.0, "value from returned iter from insert is NOT 50.0");
 
+		// 0 10 20 30 40 50
 		iter = linked_list_insert(list, iter, 40.0);
 		PRINT_LIST(list, "list: ");
 		TEST(linked_list_size(list) == 6, "size of list is NOT 6");
-		TEST(linked_list_back(list) == 50.0, "value at back is NOT 50.0");
+		TEST(linked_list_read(list, iter) == 40.0, "value from returned iter from insert is NOT 40.0");
 
-		linked_list_erase(list, linked_list_begin(list));
-		PRINT_LIST(list, "list: ");
-		TEST(linked_list_size(list) == 5, "size of list is NOT 5");
-		TEST(linked_list_front(list) == 10.0, "value at front is NOT 10.0");
-
+		// 0 10 20 30 50
 		iter = linked_list_erase(list, iter);
 		PRINT_LIST(list, "list: ");
-		TEST(linked_list_size(list) == 4, "size of list is NOT 4");
+		TEST(linked_list_size(list) == 5, "size of list is NOT 5");
+		TEST(linked_list_read(list, iter) == 50.0, "value from returned iter from erase is NOT 50");
 
-		linked_list_erase(list, iter);
+		// 0 10 20 30
+		iter = linked_list_erase(list, iter);
 		PRINT_LIST(list, "list: ");
-		TEST(linked_list_size(list) == 3, "size of list is NOT 3");
+		TEST(linked_list_size(list) == 4, "size of list is NOT 3");
 		TEST(linked_list_back(list) == 30.0, "value at back is NOT 30.0");
+		TEST(iter == linked_list_end(list), "returned iter from erase is NOT end");
+
+		// 10 20 30
+		iter = linked_list_erase(list, linked_list_begin(list));
+		PRINT_LIST(list, "list: ");
+		TEST(linked_list_size(list) == 3, "size of list is NOT 4");
+		TEST(linked_list_front(list) == 10.0, "value at front is NOT 10.0");
+		TEST(linked_list_read(list, iter) == 10.0, "value from returned iter from erase is NOT 10");
 	}
 
 	TEST(linked_list_advance(list,
@@ -476,6 +491,71 @@ void test_iterator_interface(size_t* const success, size_t* const total)
 
 void test_extra_iterator_functionality(size_t* const success, size_t* const total)
 {
+	linked_list _list;
+	linked_list* list = &_list;
+
+	linked_list_init(list);
+
+	for (size_t idx = 1; idx <= 10; idx++)
+		linked_list_push_back(list, (value_t)idx);
+
+	// 1 2 3 4 5 6 7 8 9 10
+	PRINT_LIST(list, "list: ");
+
+	{
+		iter_t iter;
+
+		// 0 0 0 1 2 3 4 5 6 7 8 9 10
+		iter = linked_list_insert_many(list, linked_list_begin(list), 3, 0.0);
+		PRINT_LIST(list, "list: ");
+		TEST(linked_list_size(list) == 13, "list size is NOT 13");
+		TEST(linked_list_front(list) == 0.0, "value at front is NOT 0.0");
+		TEST(linked_list_back(list) == 10.0, "value at back is NOT 10.0");
+		TEST(iter == linked_list_begin(list), "returned iter from insert_many is NOT begin");
+
+		// 0 0 0 1 2 3 4 5 6 7 8 9 10 20 20
+		iter = linked_list_insert_many(list, linked_list_end(list), 2, 20.0);
+		PRINT_LIST(list, "list: ");
+		TEST(linked_list_size(list) == 15, "list size is NOT 15");
+		TEST(linked_list_front(list) == 0.0, "value at front is NOT 0.0");
+		TEST(linked_list_back(list) == 20.0, "value at back is NOT 20.0");
+		TEST(iter == linked_list_advance(
+			list, linked_list_end(list), -2), "returned iter from insert_many is NOT end - 2");
+
+		// 0 0 0 1 2 3 4 5 6 7 8 9 10 20 20 20
+		iter = linked_list_insert_many(list, iter, 1, 20.0);
+		PRINT_LIST(list, "list: ");
+		TEST(linked_list_size(list) == 16, "list size is NOT 16");
+		TEST(linked_list_front(list) == 0.0, "value at front is NOT 0.0");
+		TEST(linked_list_back(list) == 20.0, "value at back is NOT 20.0");
+		TEST(iter == linked_list_advance(
+			list, linked_list_end(list), -3), "returned iter from insert_many is NOT end - 3");
+
+		// 0 0 0 1 2 3 4 5 6 7 8 9 10 20 20
+		iter = linked_list_erase_many(list, iter, 1);
+		PRINT_LIST(list, "list: ");
+		TEST(linked_list_size(list) == 15, "list size is NOT 15");
+		TEST(linked_list_front(list) == 0.0, "value at front is NOT 0.0");
+		TEST(linked_list_back(list) == 20.0, "value at back is NOT 20.0");
+		TEST(iter == linked_list_advance(
+			list, linked_list_end(list), -2), "returned iter from insert_many is NOT end - 2");
+
+		// 0 0 0 1 2 3 4 5 6 7 8 9 10
+		iter = linked_list_erase_many(list, iter, 2);
+		PRINT_LIST(list, "list: ");
+		TEST(linked_list_size(list) == 13, "list size is NOT 13");
+		TEST(linked_list_front(list) == 0.0, "value at front is NOT 0.0");
+		TEST(linked_list_back(list) == 10.0, "value at back is NOT 10.0");
+		TEST(iter == linked_list_end(list), "returned iter from insert_many is NOT end");
+
+		// 1 2 3 4 5 6 7 8 9 10
+		iter = linked_list_erase_many(list, linked_list_begin(list), 3);
+		PRINT_LIST(list, "list: ");
+		TEST(linked_list_size(list) == 10, "list size is NOT 10");
+		TEST(linked_list_front(list) == 1.0, "value at front is NOT 1.0");
+		TEST(linked_list_back(list) == 10.0, "value at back is NOT 10.0");
+		TEST(iter == linked_list_begin(list), "returned iter from insert_many is NOT begin");
+	}
 }
 
 void print_array(const value_t* arr, size_t size)

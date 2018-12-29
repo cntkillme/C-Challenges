@@ -158,7 +158,7 @@ iter_t linked_list_insert(linked_list* list, iter_t iter, value_t value);
 
 /**
  * Erases an element at the given iterator and returns the iterator following the erased element.
- * Assume iter is in the range [begin, end).
+ * Assume iter is in the range [begin, end) and iter != end.
  */
 iter_t linked_list_erase(linked_list* list, iter_t iter);
 
@@ -169,21 +169,28 @@ ptrdiff_t linked_list_dist(linked_list* list, const_iter_t iter1, const_iter_t i
 
 /**
  * Inserts some number elements before the given iterator that are initialized with then given value.
- * Returns an iterator to the first inserted element.
+ * Returns an iterator to the first inserted element (or begin if count = 0).
  */
 iter_t linked_list_insert_many(linked_list* list, iter_t begin, size_t count, value_t value);
 
 /**
+ * Erases all elements in the range [begin, begin + count). If begin + count >= end, erase all elements after begin.
+ * Assume begin != end.
+ * Returns an iterator to the iterator following the last erased element (or begin if count = 0).
+ */
+iter_t linked_list_erase_many(linked_list* list, iter_t begin, size_t count);
+
+/**
  * Inserts nodes in [first, last) before dest. Beware of overlapping between the nodes and the dest.
  * Assume dist(first, last) is non-negative and first != end.
- * Returns an iterator to the first inserted element.
+ * Returns an iterator to the first inserted element (or dest if first = last).
  */
 iter_t linked_list_insert_range(linked_list* list, iter_t dest, const_iter_t first, const_iter_t last);
 
 /**
  * Erases all elements in the range [first, last)
  * Assume dist(first, last) is non-negative and first != end.
- * Returns the iterator following the last erased element.
+ * Returns the iterator following the last erased element (or first if first = last).
  */
 iter_t linked_list_erase_range(linked_list* list, iter_t first, iter_t last);
 
