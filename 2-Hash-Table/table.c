@@ -3,6 +3,11 @@
 
 /* Standard implementations for table_key_t: ArithmeticType, value_key_t: ArithmeticType. */
 
+int key_compare(const table_key_t* key1, const table_key_t* key2)
+{
+	return *key1 == *key2;
+}
+
 size_t key_hasher(const table_key_t* key)
 {
 	return *key;
@@ -55,7 +60,6 @@ table_const_iter_t table_begin(const table_t* table);
 table_iter_t table_begin_mut(table_t* table);
 
 table_const_iter_t table_end(const table_t* table);
-table_iter_t table_end_mut(table_t* table);
 
 table_const_iter_t table_next(const table_t* table, table_const_iter_t iter);
 table_iter_t table_next_mut(const table_t* table, table_iter_t iter);

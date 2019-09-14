@@ -36,6 +36,7 @@
 typedef int table_key_t;
 typedef int table_value_t;
 
+extern int key_compare(const table_key_t* key1, const table_key_t* key2);
 extern size_t key_hasher(const table_key_t* key);
 extern void key_duplicator(table_key_t* target, const table_key_t* key);
 extern void key_destructor(table_key_t* key);
