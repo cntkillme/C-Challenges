@@ -36,12 +36,6 @@
 typedef int table_key_t;
 typedef int table_value_t;
 
-typedef size_t(table_key_hasher)(const table_key_t* key);
-typedef void(table_key_duplicator_t)(table_key_t* target, const table_key_t* key);
-typedef void(table_key_destructor_t)(table_key_t* key);
-typedef void(table_value_duplicator_t)(table_value_t* target, const table_value_t* value);
-typedef void(table_value_destructor_t)(table_value_t* value);
-
 extern size_t key_hasher(const table_key_t* key);
 extern void key_duplicator(table_key_t* target, const table_key_t* key);
 extern void key_destructor(table_key_t* key);
@@ -91,6 +85,7 @@ size_t table_size(const table_t* table);
 
 /**
  * Inserts a key-value pair into the table.
+ * If the key already exists in the table, the insertion is a failure.
  * @param table A pointer to an initialized table.
  * @param key A pointer to the key.
  * @param value A pointer to the value.
