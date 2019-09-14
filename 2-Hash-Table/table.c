@@ -38,6 +38,8 @@ void value_destructor(table_value_t* value)
 
 void table_init(table_t* table);
 
+void table_free(table_t* table);
+
 void table_clear(table_t* table);
 
 size_t table_size(const table_t* table);

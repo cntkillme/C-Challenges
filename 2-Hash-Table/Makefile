@@ -7,4 +7,4 @@ debug:
 	gcc -Wall -Werror -pedantic -O3 -std=c99 -D DEBUG_OUTPUT main.c table.c -o main.out
 
 clean:
-	rm *.o *.out
+	rm -f *.o *.out

@@ -72,6 +72,13 @@ typedef struct table_t
 void table_init(table_t* table);
 
 /**
+ * Releases resources used by the given table.
+ * The table will become in an uninitialized state after this call.
+ * @param table A pointer to an initialized table.
+ */
+void table_free(table_t* table);
+
+/**
  * Clears all entries of the given table.
  * @param table A pointer to an initialized table.
  */
