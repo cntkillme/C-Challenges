@@ -1,5 +1,0 @@
-Latex/*
-*.c
-*.o
-*.out
-!main.c
