@@ -8,6 +8,7 @@
  * Implementation-defined specification:
  *   table_key_t: Type definition for keys in a table.
  *   value_type_t: Type definition for values in a table.
+ *   key_compare: Function that compares two keys, returns 1 if identical, 0 otherwise.
  *   key_hasher: Function that maps an instance of table_key_t to an unsigned integral.
  *   key_duplicator: Function that duplicates an instance of table_key_t.
  *   key_destructor: Function that frees all memory associated with an instance of table_key_t.
@@ -16,7 +17,7 @@
  *   table_t: Hash table structure type definition.
  *
  * Expectations:
- *   The memory belonging to the keys and values of a table may be marked as TRANSIENT or STATIC.
+ *   The memory belonging to the keys and values of a table may be marked as TRANSIENT, STATIC, or TRANSFER.
  *    TRANSIENT specifies that a copy of the key or value will be made and its memory will be managed by the table.
  *    STATIC specifies that no copy of the key or value will be made and its memory must be managed by the user.
  *    TRANSFER specifies that no copy of the key or value will be made and its memory will be managed by the table.
