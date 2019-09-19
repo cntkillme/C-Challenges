@@ -51,10 +51,10 @@ typedef enum storage_mode
 
 typedef struct table_node_t
 {
-	const table_key_t* key;
-	const storage_mode key_storage_type;
-
+	table_key_t* key;
 	table_value_t* value;
+
+	storage_mode key_storage_type;
 	storage_mode value_storage_type;
 } table_node_t;
 
